@@ -27,8 +27,8 @@ jobs:
           ./configure --host=aarch64-linux-gnu LDFLAGS="-static" CFLAGS="-static"
           make
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.2 # Указана конкретная рабочая версия
+      - name: Upload artifact (alternative)
+        uses: actions/upload-artifact@v2 # Используем v2 как запасной вариант
         with:
           name: par2-arm64
           path: par2cmdline/par2
