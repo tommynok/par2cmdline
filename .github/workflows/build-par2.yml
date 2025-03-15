@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -17,28 +19,27 @@ jobs:
       - name: Install cross-compilation tools
         run: |
           sudo apt update
-          sudo apt install -y build-essential autoconf automake g++-aarch64-linux-gnu
+          sudo apt install -y build-essential autoconf automake g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
       - name: Clone and build par2cmdline
         run: |
           git clone https://github.com/Parchive/par2cmdline.git
           cd par2cmdline
           autoreconf -i
-          ./configure --host=aarch64-linux-gnu LDFLAGS="-static" CFLAGS="-static"
+          ./configure --host=aarch64-linux-gnu LDFLAGS="-static" CFLAGS="-static -Os" CXXFLAGS="-static -Os"
           make
+          aarch64-linux-gnu-strip par2
 
-      - name: Create a GitHub Release and upload artifact
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install GitHub CLI
         run: |
-          # Создаём тег для релиза
-          git tag v1.0.0
-          git push origin v1.0.0
-          # Устанавливаем gh
           sudo apt install -y curl
           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
           sudo apt update
           sudo apt install gh -y
-          # Создаём релиз и загружаем par2
-          gh release create v1.0.0 par2cmdline/par2 --title "par2 ARM64 Binary" --notes "Static par2 binary for ARM64"
+
+      - name: Create a GitHub Release and upload artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v1.0.2 par2cmdline/par2 --title "par2 ARM64 Binary v1.0.2" --notes "Optimized static par2 binary for ARM64"
