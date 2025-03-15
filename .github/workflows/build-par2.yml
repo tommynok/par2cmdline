@@ -1,9 +1,12 @@
 name: Build par2 for ARM64
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch: # Добавляет кнопку ручного запуска
+
 jobs:
   build:
     runs-on: ubuntu-latest
