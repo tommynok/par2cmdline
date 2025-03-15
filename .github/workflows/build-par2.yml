@@ -26,9 +26,9 @@ jobs:
           git clone https://github.com/Parchive/par2cmdline.git
           cd par2cmdline
           autoreconf -i
-          ./configure --host=aarch64-linux-gnu LDFLAGS="-static" CFLAGS="-static -Os" CXXFLAGS="-static -Os"
+          ./configure --host=aarch64-linux-gnu LDFLAGS="-static" CFLAGS="-static -Os" CXXFLAGS="-static -Os" --disable-nls
           make
-          aarch64-linux-gnu-strip par2
+          aarch64-linux-gnu-strip --strip-unneeded par2
 
       - name: Install GitHub CLI
         run: |
@@ -42,4 +42,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.0.2 par2cmdline/par2 --title "par2 ARM64 Binary v1.0.2" --notes "Optimized static par2 binary for ARM64"
+          gh release create v1.0.3 par2cmdline/par2 --title "par2 ARM64 Binary v1.0.3" --notes "Highly optimized static par2 binary for ARM64"
