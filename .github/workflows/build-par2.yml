@@ -5,7 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch: # Добавляет кнопку ручного запуска
+  workflow_dispatch: # Ручной запуск
 
 jobs:
   build:
@@ -13,22 +13,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Install cross-compilation tools
         run: |
           sudo apt update
           sudo apt install -y build-essential autoconf automake g++-aarch64-linux-gnu
-      - name: Clone par2cmdline
+
+      - name: Clone and build par2cmdline
         run: |
           git clone https://github.com/Parchive/par2cmdline.git
-          cd par2cmdline
-      - name: Configure and build
-        run: |
           cd par2cmdline
           autoreconf -i
           ./configure --host=aarch64-linux-gnu LDFLAGS="-static" CFLAGS="-static"
           make
+
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2 # Указана конкретная рабочая версия
         with:
           name: par2-arm64
           path: par2cmdline/par2
